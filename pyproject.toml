@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "beta-cvae-2dgrid"
+version = "0.1.0"
+description = "Beta-CVAE with 2D grid representation for continuous 3D deformation and stress prediction of thin-walled structures"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Jian Xie" }]
+dependencies = [
+    "torch>=1.13",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pandas>=1.5",
+    "matplotlib>=3.7",
+]
+
+[tool.setuptools.packages.find]
+include = ["beta_cvae*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "slow: 需要较长时间或完整数据转换的测试",
+]

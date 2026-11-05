@@ -1,0 +1,26 @@
+来源与授权说明
+==============
+
+本仓库是作者的学位论文《薄壁结构冲击响应连续三维大变形预测的几何深度学习方法研究》
+第 5 章所涉程序的整理版本。原始工程位于作者本机的
+`202506Deformation&StressPrediction2DGrid` 目录，未随仓库分发。
+
+- 代码：按论文方法重新组织为 Python 包，模型数学形式、损失函数与数据流程保持原样。
+- 数据：真实有限元 CSV、npy 网格与训练权重体量较大且属于作者单位数据，**不包含**在本仓库中。
+  仓库提供合成数据生成器与真实 CSV 转换工具，克隆后可独立运行。
+- 图片：`docs/figures/` 中的少量图片来自作者学位论文，仅作历史结果存档，
+  并非当前代码的复现输出。
+- 第三方依赖：PyTorch、NumPy、SciPy、pandas、Matplotlib，
+  各自遵循其原始许可证。
+
+Third-party references
+----------------------
+The method follows the Beta-VAE and conditional VAE literature, including:
+
+- Higgins et al., "beta-VAE: Learning Basic Visual Concepts with a Constrained
+  Variational Framework", ICLR 2017.
+- Sohn et al., "Learning Structured Output Representation using Deep
+  Conditional Generative Models", NeurIPS 2015.
+
+Radial basis function interpolation is provided by
+`scipy.interpolate.RBFInterpolator`.
