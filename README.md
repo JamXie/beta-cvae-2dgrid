@@ -19,20 +19,19 @@ redistribution of the original project.
 ## Method at a glance
 
 ```text
-FE CSV  ->  voxelize  ->  3D shell graph  ->  unfold  ->  2D grid  [4, 80, 84]
-                                                               |
-                                      pad to 96x96, mask border |
-                                                               v
-                     multi-branch residual encoder -> latent z (16)
-                                                               |
-                     condition embedding (time, angle)         |
-                                                               v
-                                   Beta-CVAE training with masked MSE + beta * KL
-                                                               |
-        RBFI over (step, angle) -> z*  ->  decoder  ->  [4, 96, 96] -> crop
-                                                               |
-                                          denormalize and compute MAE / RMSE
+FE CSV export
+   -> voxelize and unfold into a 2D grid [4, 80, 84]     beta_cvae/data/
+   -> pad to 96x96, mask keeps the 80x84 valid window    training/trainer.py
+   -> multi-branch residual encoder -> 16-D latent z     models/final.py
+   -> Beta-CVAE training: masked MSE + beta * KL         training/losses.py
+   -> RBFI over (Step, Degree) interpolates z            inference/rbfi.py
+   -> conditional decode and crop to [4, 80, 84]         inference/decode.py
+   -> denormalize and compute displacement/stress MAE/RMSE  metrics.py
 ```
+
+The latent manifold compresses each grid to 16 dimensions, and RBFI interpolates
+it continuously over the time-angle condition space, so no separate model is
+needed for each time step or angle.
 
 - **2D grid:** channels `dx, dy, dz, Mises`; ring direction 80 nodes, height
   direction 84 layers. Displacements are divided by 300 mm, stress by 200 MPa.

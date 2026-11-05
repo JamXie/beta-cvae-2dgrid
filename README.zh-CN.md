@@ -13,20 +13,18 @@
 ## 方法概览
 
 ```text
-FE CSV  ->  体素化  ->  3D 壳层图  ->  展开  ->  2D Grid [4, 80, 84]
-                                                    |
-                                 补零到 96×96，掩码忽略边界 |
-                                                    v
-                多分支残差编码器 -> 结构潜变量 z（16 维）
-                                                    |
-                时间/角度条件嵌入                     |
-                                                    v
-              Beta-CVAE 训练：掩码 MSE + beta × KL
-                                                    |
-    在 (step, angle) 上拟合 RBFI -> z* -> 解码 -> [4,96,96] -> 裁剪
-                                                    |
-                              反归一化并计算 MAE / RMSE
+FE CSV（有限元导出）
+   -> 体素化并沿环向展开为 2D Grid [4, 80, 84]          beta_cvae/data/
+   -> 补零到 96×96，掩码只保留 80×84 有效区域            training/trainer.py
+   -> 多分支残差编码器 -> 16 维结构潜变量 z              models/final.py
+   -> Beta-CVAE 训练：掩码 MSE + beta × KL               training/losses.py
+   -> RBFI 在 (Step, Degree) 上插值潜变量                inference/rbfi.py
+   -> 条件解码并裁剪回 [4, 80, 84]                       inference/decode.py
+   -> 反归一化，计算位移/应力 MAE、RMSE                  metrics.py
 ```
+
+潜变量流形负责把高维网格压缩到 16 维；RBFI 在时间-角度条件空间上连续插值，
+因此无需为每个时间步或角度单独训练。
 
 - **2D Grid**：通道为 `dx, dy, dz, Mises`；环向 80 个节点，高度 84 层。
   位移除以 300 mm，应力除以 200 MPa。
